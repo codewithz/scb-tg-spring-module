@@ -44,14 +44,24 @@ public class CustomerController {
 	}
 	
 	@PutMapping("/customer/{id}")
-	public String updateCustomer(@PathVariable int id,Customer c)
+	public String updateCustomer(@PathVariable int id,@RequestBody Customer c)
 	{
-		return null;
+		String result=customerService.updateCustomer(id, c);
+		return result;
 	}
 	
 	@DeleteMapping("/customer/{id}")
 	public String deleteCustomer(@PathVariable int id)
 	{
-		return null;
+		String result=customerService.deleteCustomer(id);
+		return result;
+	}
+	
+	@GetMapping("/customer/accounttype/{accountType}")
+	public List<Customer> getCustomerByAccountType(@PathVariable String accountType)
+	{
+		List<Customer> list=customerService.getCustomersByAccountType(accountType);
+		return list;
+		
 	}
 }
