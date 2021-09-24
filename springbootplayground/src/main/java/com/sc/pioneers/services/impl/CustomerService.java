@@ -7,14 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sc.pioneers.dao.ICustomerDAO;
+import com.sc.pioneers.dao.ICustomerSchemeVODAO;
 import com.sc.pioneers.entities.Customer;
+import com.sc.pioneers.entities.vo.CustomerSchemeVO;
 import com.sc.pioneers.services.ICustomerService;
 
 @Service
 public class CustomerService implements ICustomerService{
 	
 	@Autowired
-	ICustomerDAO customerDAO;
+	private ICustomerDAO customerDAO;
+	
+	@Autowired
+	private ICustomerSchemeVODAO csDAO;
+	
 
 	@Override
 	public String addCustomer(Customer c) {
@@ -52,6 +58,12 @@ public class CustomerService implements ICustomerService{
 	@Override
 	public List<Customer> getCustomersByAccountType(String accountType) {
 		List<Customer> list=customerDAO.getCustomersByAccountType(accountType);
+		return list;
+	}
+
+	@Override
+	public List<CustomerSchemeVO> getSchemesForCustomer(int id) {
+		List<CustomerSchemeVO> list=csDAO.getSchemesByCustomerId(id);
 		return list;
 	}
 

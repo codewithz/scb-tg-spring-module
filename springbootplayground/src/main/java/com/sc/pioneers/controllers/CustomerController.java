@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,9 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sc.pioneers.config.APISuccessPayload;
 import com.sc.pioneers.entities.Customer;
+import com.sc.pioneers.entities.vo.CustomerSchemeVO;
 import com.sc.pioneers.services.ICustomerService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class CustomerController {
 	
 	//ICustomerService customerService=new CustomerService();
@@ -25,7 +28,7 @@ public class CustomerController {
 	@Autowired
 	ICustomerService customerService;
 	
-	@PostMapping("/customer")
+	@PostMapping("/customers")
 	public ResponseEntity<APISuccessPayload> addCustomer(@RequestBody Customer c)
 	{
 		String result=customerService.addCustomer(c);
@@ -36,7 +39,7 @@ public class CustomerController {
 		return response;
 	}
 	
-	@GetMapping("/customer/{id}")
+	@GetMapping("/customers/{id}")
 	public ResponseEntity<APISuccessPayload> getCustomerById(@PathVariable int id)
 	{
 		Customer c=customerService.getCustomerById(id);
@@ -46,7 +49,7 @@ public class CustomerController {
 		return response;
 	}
 	
-	@GetMapping("/customer")
+	@GetMapping("/customers")
 	public  ResponseEntity<APISuccessPayload> getAllCustomers()
 	{
 		List<Customer> list=customerService.getAllCustomers();
@@ -64,7 +67,7 @@ public class CustomerController {
 		return response;
 	}
 	
-	@PutMapping("/customer/{id}")
+	@PutMapping("/customers/{id}")
 	public ResponseEntity<APISuccessPayload> updateCustomer(@PathVariable int id,@RequestBody Customer c)
 	{
 		String result=customerService.updateCustomer(id, c);
@@ -81,7 +84,7 @@ public class CustomerController {
 		return response;
 	}
 	
-	@DeleteMapping("/customer/{id}")
+	@DeleteMapping("/customers/{id}")
 	public ResponseEntity<APISuccessPayload> deleteCustomer(@PathVariable int id)
 	{
 		String result=customerService.deleteCustomer(id);
@@ -99,7 +102,7 @@ public class CustomerController {
 		return response;
 	}
 	
-	@GetMapping("/customer/accounttype/{accountType}")
+	@GetMapping("/customers/accounttype/{accountType}")
 	public ResponseEntity<APISuccessPayload> getCustomerByAccountType(@PathVariable String accountType)
 	{
 		List<Customer> list=customerService.getCustomersByAccountType(accountType);
@@ -118,4 +121,16 @@ public class CustomerController {
 		return response;
 		
 	}
+	
+	@GetMapping("/customers/schemes/{id}")
+	public ResponseEntity<APISuccessPayload> getSchemeForCustomerById(@PathVariable int id)
+	{
+		List<CustomerSchemeVO> list=customerService.getSchemesForCustomer(id);
+		
+		APISuccessPayload payload=APISuccessPayload.build(list,"Customer Found", HttpStatus.OK);
+		ResponseEntity<APISuccessPayload> response=new ResponseEntity<>(payload,HttpStatus.OK);
+		return response;
+	}
+	
+	
 }
