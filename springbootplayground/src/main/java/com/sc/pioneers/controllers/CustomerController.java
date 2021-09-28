@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sc.pioneers.config.APISuccessPayload;
 import com.sc.pioneers.entities.Customer;
+import com.sc.pioneers.entities.vo.AppUserTokenVO;
 import com.sc.pioneers.entities.vo.CustomerSchemeVO;
+import com.sc.pioneers.services.IAuthService;
 import com.sc.pioneers.services.ICustomerService;
 
 @RestController
@@ -27,6 +30,9 @@ public class CustomerController {
 	
 	@Autowired
 	ICustomerService customerService;
+	
+	@Autowired
+	IAuthService authService;
 	
 	@PostMapping("/customers")
 	public ResponseEntity<APISuccessPayload> addCustomer(@RequestBody Customer c)
@@ -85,8 +91,13 @@ public class CustomerController {
 	}
 	
 	@DeleteMapping("/customers/{id}")
-	public ResponseEntity<APISuccessPayload> deleteCustomer(@PathVariable int id)
+	public ResponseEntity<APISuccessPayload> deleteCustomer(@RequestHeader("X-SCB-Username") String username,
+			@RequestHeader("X-SCB-Token") String token,@PathVariable int id)
 	{
+		AppUserTokenVO tokenVO=new AppUserTokenVO(username, token);
+		if(authService.authenticate(tokenVO))
+		{
+		
 		String result=customerService.deleteCustomer(id);
 		
 
@@ -100,6 +111,10 @@ public class CustomerController {
 		
 		ResponseEntity<APISuccessPayload> response=new ResponseEntity<>(payload,HttpStatus.OK);
 		return response;
+		}
+		else {
+			return null;
+		}
 	}
 	
 	@GetMapping("/customers/accounttype/{accountType}")
@@ -130,6 +145,34 @@ public class CustomerController {
 		APISuccessPayload payload=APISuccessPayload.build(list,"Customer Found", HttpStatus.OK);
 		ResponseEntity<APISuccessPayload> response=new ResponseEntity<>(payload,HttpStatus.OK);
 		return response;
+	}
+	
+	@GetMapping("/customers/authenticated-only")
+	public  ResponseEntity<APISuccessPayload> getAllCustomersAO(@RequestHeader("X-SCB-Username") String username,
+																@RequestHeader("X-SCB-Token") String token
+																)
+	{
+		AppUserTokenVO tokenVO=new AppUserTokenVO(username, token);
+		if(authService.authenticate(tokenVO))
+		{
+		List<Customer> list=customerService.getAllCustomers();
+		
+		APISuccessPayload payload=new APISuccessPayload();
+		payload.setBody(list);
+		payload.setStatus(200);
+		payload.setHttpStatus(String.valueOf(HttpStatus.OK));
+		payload.setSuccess(true);
+		payload.setException(false);
+		payload.setMessage("Customers Found");
+		
+		ResponseEntity<APISuccessPayload> response=new ResponseEntity<>(payload,HttpStatus.OK);
+		
+		return response;
+		}
+		else
+		{
+			return null;
+		}
 	}
 	
 	

@@ -19,6 +19,14 @@ public class AppUserTokenVO {
 		this.roles = roles;
 		this.token = token;
 	}
+	
+	
+
+	public AppUserTokenVO(String username, String token) {
+		super();
+		this.username = username;
+		this.token = token;
+	}
 
 	public String getUsername() {
 		return username;

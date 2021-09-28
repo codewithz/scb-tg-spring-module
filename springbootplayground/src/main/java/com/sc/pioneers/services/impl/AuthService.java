@@ -6,6 +6,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.google.common.hash.Hashing;
 import com.sc.pioneers.dao.IAppUserDAO;
@@ -15,6 +18,7 @@ import com.sc.pioneers.entities.vo.AppUserRegisterVO;
 import com.sc.pioneers.entities.vo.AppUserTokenVO;
 import com.sc.pioneers.services.IAuthService;
 
+@Service
 public class AuthService implements IAuthService{
 	
 	@Autowired
@@ -42,7 +46,8 @@ public class AuthService implements IAuthService{
 		}
 		else
 		{
-			throw new RuntimeException();
+			userDAO.logout(loginVO.getUsername());
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Login Failed");
 		}
 		
 	
@@ -78,7 +83,13 @@ public class AuthService implements IAuthService{
 
 	@Override
 	public boolean authenticate(AppUserTokenVO tokenVO) {
-		return userDAO.getLoginStatus(tokenVO.getUsername(), tokenVO.getToken());
+		if (userDAO.getLoginStatus(tokenVO.getUsername(), tokenVO.getToken())) {
+			return true;
+		}
+		else
+		{
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED User");
+		}
 	}
 
 	@Override
