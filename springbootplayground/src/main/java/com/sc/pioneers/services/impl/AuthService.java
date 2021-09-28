@@ -47,6 +47,7 @@ public class AuthService implements IAuthService{
 		else
 		{
 			userDAO.logout(loginVO.getUsername());
+			System.out.println("Test");
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Login Failed");
 		}
 		
